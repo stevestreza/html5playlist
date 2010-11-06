@@ -1,0 +1,17 @@
+{
+	"tracks": [
+		{
+			"title": "UKF Dubstep Tutorial",
+			"artist": "Dubba Jonny",
+			"seconds": 179,
+			"url": "http://d1msnxp21pi1n3.cloudfront.net/1%20-%20UKF%20Dubstep%20Tutorial%20(Dubba%20Jonny).mp3",
+			"albumArtURL": "http://i.ytimg.com/vi/CJzfTZlEl40/0.jpg"
+		},
+		{
+			"title": "Set You Free",
+			"artist": "Dagga",
+			"seconds": 212,
+			"url": "http://d1msnxp21pi1n3.cloudfront.net/2%20-%20Dagga%20-%20Set%20You%20Freee.mp3"
+		}
+	]
+}
