@@ -40,6 +40,7 @@ MPPlayer.prototype.play = function(){
 			this.loadNextTrack();
 		}
 		
+		this._player[0].load();
 		this._player[0].play();
 	}
 };
@@ -64,7 +65,8 @@ MPPlayer.prototype.loadNextTrack = function(){
 		});
 		
 		if(this._isPlaying == true){
-			this._player[0].play();
+			this._isPlaying = false;
+			this.play();
 		}
 	}
 }
