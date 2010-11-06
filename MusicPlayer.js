@@ -75,12 +75,40 @@ MPPlayer.prototype.getCurrentTrack = function(){
 	return this._currentTrack;
 }
 
+MPPlayer.prototype.trackViewForTrack = function(track){
+	var trackView = track._trackView;
+	if(!trackView){
+		trackView = new MPTrackView(track, this);
+		track._trackView = trackView;
+	}
+	return trackView;
+}
+
+var MPTrackView = function(track, player){
+	var self = this;
+	this._track = track;
+	
+	this._domElement = $("<div class='MPTrackView'></div>");
+	this._domElement.bind("click", function(event){
+		
+	})
+}
+
 $(function(){
 	var player = new MPPlayer();
-	$.getJSON("playlist.json", function(data){
+	
+	var playlistURL = window.location.hash;
+	if(playlistURL != undefined){
+		playlistURL = playlistURL.substr(1, playlistURL.length);
+		if(playlistURL.match(/^http:\/\//)){
+			playlistURL = playlistURL + "?callback=?";
+		}
+	}
+
+	$.getJSON(playlistURL || "playlist.json", function(data){
 		var tracks = data.tracks;
 		var playlist = new MPPlaylist(tracks);
-		
+
 		player.setPlaylist(playlist);
 		player.loadNextTrack();
 		player.play();
