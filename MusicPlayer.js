@@ -1,5 +1,17 @@
-var MPPlaylist = function(tracks){
+window.MPHashFromUsernameAndPassword = function(username, password){
+	var timestamp = new Date().getTime();
+	var hash = MD5(timestamp + username + password);
+	return {
+		username: username,
+		hash: hash,
+		timestamp: timestamp
+	};
+}
+
+var MPPlaylist = function(tracks, username, playlistStub){
 	this._tracks = tracks;
+	this._username = username;
+	this._playlistStub = playlistStub;
 };
 
 MPPlaylist.prototype.trackAfter = function(index){
@@ -20,6 +32,26 @@ MPPlaylist.prototype.indexOfTrack = function(track){
 
 MPPlaylist.prototype.numberOfTracks = function(){
 	return this._tracks.length;
+}
+
+MPPlaylist.prototype.saveToServerWithInfo = function(info){
+	var username = info.username;
+	var password = info.password;
+	var name = info.name;
+	
+	var parameters = {
+		name: name,
+		tracks: this._tracks
+	};
+	
+	var signature = MPHashFromUsernameAndPassword(username, password);
+	for(var key in signature){
+		parameters[key] = signature[key];
+	}
+	
+	$.post("http://mix.synack.me/" + this._username + "/" + this._playlistStub, parameters, function(data){
+		console.log("Got data: " + JSON.stringify(data));
+	});
 }
 
 var MPPlayer = function(dom){
