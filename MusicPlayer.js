@@ -272,7 +272,12 @@ $(function(){
 	$(window).hashchange(function(){
 		var playlistURL = window.location.hash;
 		if(playlistURL != undefined){
+			
 			playlistURL = playlistURL.substr(1, playlistURL.length);
+			if(playlistURL.match(/^!/)){
+				playlistURL = "http://api.slaylist.com/" + playlistURL.substr(1, playlistURL.length);
+			}
+			
 			if(playlistURL.match(/^http:\/\//)){
 				playlistURL = playlistURL + "?callback=?";
 			}
