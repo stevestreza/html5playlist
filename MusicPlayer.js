@@ -14,11 +14,19 @@ MPPlaylist.prototype.getTrackAtIndex = function(index){
 	return this._tracks[index];
 }
 
-var MPPlayer = function(){
+MPPlaylist.prototype.numberOfTracks = function(){
+	return this._tracks.length;
+}
+
+var MPPlayer = function(dom){
 	this._player = $("<audio></audio>");
 	this._isPlaying = false;
 	this._currentTrack = -1;
 	this._playlist = null;
+	
+	this._dom = $(dom);
+	
+	console.log("Creating player in dom element ", this._dom[0]);
 	
 	var self = this;
 	this._player.bind("ended", function(){
@@ -30,6 +38,15 @@ MPPlayer.prototype.setPlaylist = function(playlist){
 	this._currentTrack = -1;
 	this._playlist = playlist;
 
+	console.log("Loading playlist views");
+	if(this._dom){
+		var count = this._playlist.numberOfTracks();
+		for(var idx=0; idx<count; idx++){
+			var track = this._playlist.getTrackAtIndex(idx);
+			console.log("Loading view for track at " + idx);
+			this._dom.append(this.trackViewForTrack(track).domElement());
+		}
+	}
 };
 
 MPPlayer.prototype.play = function(){
@@ -40,8 +57,8 @@ MPPlayer.prototype.play = function(){
 			this.loadNextTrack();
 		}
 		
-		this._player[0].load();
-		this._player[0].play();
+//		this._player[0].load();
+//		this._player[0].play();
 	}
 };
 
@@ -91,11 +108,45 @@ var MPTrackView = function(track, player){
 	this._domElement = $("<div class='MPTrackView'></div>");
 	this._domElement.bind("click", function(event){
 		
-	})
+	});
+	
+	this._albumArtView = $("<div class='MPAlbumArtView'></div>");
+	this._titleLabel = $("<div class='MPTitleLabel'></div>");
+	this._artistLabel = $("<div class='MPArtistLabel'></div>");
+	this._domElement.append(this._albumArtView).append(this._titleLabel).append(this._artistLabel);
+	
+	if(this._track.albumArtURL){
+		this._albumArtView.css({
+			backgroundImage: this._track.albumArtURL
+		});
+	}else{
+		this._albumArtView.addClass("MPEmptyAlbumArt");
+	}
+	
+	if(this._track.title){
+		this._titleLabel.text(this._track.title);
+	}else{
+		this._titleLabel.text("No Title");
+		this._titleLabel.addClass("PMEmptyLabel");
+	}
+
+	if(this._track.artist){
+		this._artistLabel.text(this._track.artist);
+	}else{
+		this._artistLabel.text("No Artist");
+		this._artistLabel.addClass("PMEmptyLabel");
+	}
+	
+	console.log("Built a track view")
+	return this;
+}
+
+MPTrackView.prototype.domElement = function(){
+	return this._domElement[0];
 }
 
 $(function(){
-	var player = new MPPlayer();
+	var player = new MPPlayer($("#playlist")[0]);
 	
 	var playlistURL = window.location.hash;
 	if(playlistURL != undefined){
