@@ -53,15 +53,42 @@ MPPlayer.prototype.play = function(){
 			this.loadNextTrack();
 		}
 		
-//		this._player[0].load();
-//		this._player[0].play();
+		this._player[0].load();
+		this._player[0].play();
+		
+		this._startUpdateTimer();
 	}
 };
+
+MPPlayer.prototype._startUpdateTimer = function(){
+	var self = this;
+	this._timer = setInterval(function(){
+		self._updateProgressBar();
+	}, 66);
+};
+
+MPPlayer.prototype._stopUpdateTimer = function(){
+	if(this._timer){
+		clearInterval(this._timer);
+		this._timer = null;
+	}
+}
+
+MPPlayer.prototype._updateProgressBar = function(){
+	var audio = this._player[0];
+	var rem = parseInt(audio.duration - audio.currentTime, 10);
+	var pos = (audio.currentTime / audio.duration);
+	
+	var track = this.getCurrentTrack();
+	var trackView = this.trackViewForTrack(track);
+	trackView.setProgress(pos);
+}
 
 MPPlayer.prototype.pause = function(){
 	if(this._isPlaying){
 		this._isPlaying = false;
 		this._player[0].stop();
+		this._stopUpdateTimer();
 	}
 };
 
@@ -85,7 +112,7 @@ MPPlayer.prototype.loadNextTrack = function(){
 }
 
 MPPlayer.prototype.getCurrentTrack = function(){
-	return this._currentTrack;
+	return this._playlist.getTrackAtIndex(this._currentTrack);
 }
 
 MPPlayer.prototype.trackViewForTrack = function(track){
@@ -106,16 +133,32 @@ var MPTrackView = function(track, player){
 		
 	});
 	
+	this._backgroundView = $("<div class='MPBackgroundView'></div>");
+	this._contentsView = $("<div class='MPContents'></div>");
+	
+	this._progressBarView = $("<div class='MPProgressBar'></div>");
+	this._backgroundView.append(this._progressBarView);
+	
+	$([this._backgroundView, this._contentsView]).css({
+		width: "100%",
+		height: "100%",
+		position: "relative",
+		left:0,
+		top:0
+	});
+	
 	this._albumArtView = $("<div class='MPAlbumArtView'></div>");
 	this._titleLabel = $("<div class='MPTitleLabel MPLabel'></div>");
 	this._artistLabel = $("<div class='MPArtistLabel MPLabel'></div>");
 	this._albumLabel = $("<div class='MPAlbumLabel MPLabel'></div>");
 
-	this._domElement.append(this._albumArtView).append(this._titleLabel).append(this._artistLabel).append(this._albumLabel);
+	this._contentsView.append(this._albumArtView).append(this._titleLabel).append(this._artistLabel).append(this._albumLabel);
+	
+	this._domElement.append(this._backgroundView).append(this._contentsView);
 	
 	if(this._track.albumArtURL){
 		this._albumArtView.css({
-			backgroundImage: this._track.albumArtURL
+			backgroundImage: "url(" + this._track.albumArtURL + ")"
 		});
 	}else{
 		this._albumArtView.addClass("MPEmptyAlbumArt");
@@ -141,6 +184,12 @@ var MPTrackView = function(track, player){
 		this._albumLabel.text("No Album");
 		this._albumLabel.addClass("PMEmptyLabel");
 	}
+}
+
+MPTrackView.prototype.setProgress = function(progress){
+	this._progressBarView.css({
+		width: "" + (progress * 100) + "%"
+	})
 }
 
 MPTrackView.prototype.domElement = function(){
