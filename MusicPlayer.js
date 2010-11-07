@@ -69,6 +69,10 @@ var MPPlayer = function(dom){
 };
 
 MPPlayer.prototype.setPlaylist = function(playlist){
+	if(this._dom){
+		this._dom.find(".MPTrackView").remove();
+	}
+	
 	this._currentTrack = -1;
 	this._playlist = playlist;
 
@@ -265,21 +269,22 @@ MPTrackView.prototype.domElement = function(){
 
 $(function(){
 	var player = new MPPlayer($("#playlist")[0]);
-	
-	var playlistURL = window.location.hash;
-	if(playlistURL != undefined){
-		playlistURL = playlistURL.substr(1, playlistURL.length);
-		if(playlistURL.match(/^http:\/\//)){
-			playlistURL = playlistURL + "?callback=?";
+	$(window).hashchange(function(){
+		var playlistURL = window.location.hash;
+		if(playlistURL != undefined){
+			playlistURL = playlistURL.substr(1, playlistURL.length);
+			if(playlistURL.match(/^http:\/\//)){
+				playlistURL = playlistURL + "?callback=?";
+			}
 		}
-	}
 
-	$.getJSON(playlistURL || "playlist.json", function(data){
-		var tracks = data.tracks;
-		var playlist = new MPPlaylist(tracks);
+		$.getJSON(playlistURL || "playlist.json", function(data){
+			var tracks = data.tracks;
+			var playlist = new MPPlaylist(tracks);
 
-		player.setPlaylist(playlist);
-		player.loadNextTrack();
-		player.play();
-	});
+			player.setPlaylist(playlist);
+			player.loadNextTrack();
+			player.play();
+		});
+	}).trigger("hashchange");
 });
