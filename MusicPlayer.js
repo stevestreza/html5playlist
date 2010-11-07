@@ -277,9 +277,17 @@ $(function(){
 	var player = new MPPlayer($("#playlist")[0]);
 	$(window).hashchange(function(){
 		var playlistURL = window.location.hash;
+		var song = 0;
 		if(playlistURL != undefined){
-			
 			playlistURL = playlistURL.substr(1, playlistURL.length);
+			
+			// check for page hash
+			var songArray = playlistURL.match(/^.+\/([0-9]+)/);
+			if(songArray && songArray.length > 0){
+				song = parseInt(songArray[1], 10) - 1;
+				playlistURL = playlistURL.substr(0, playlistURL.length - songArray[1].length - 1);
+			}
+			
 			if(playlistURL.match(/^!/)){
 				playlistURL = "http://api.slaylist.com/" + playlistURL.substr(1, playlistURL.length);
 			}
@@ -294,7 +302,7 @@ $(function(){
 			var playlist = new MPPlaylist(tracks);
 
 			player.setPlaylist(playlist);
-			player.loadNextTrack();
+			player.loadTrack(playlist.trackAtIndex(song));
 			player.play();
 		});
 	}).trigger("hashchange");
