@@ -26,8 +26,6 @@ var MPPlayer = function(dom){
 	
 	this._dom = $(dom);
 	
-	console.log("Creating player in dom element ", this._dom[0]);
-	
 	var self = this;
 	this._player.bind("ended", function(){
 		self.loadNextTrack();
@@ -38,12 +36,10 @@ MPPlayer.prototype.setPlaylist = function(playlist){
 	this._currentTrack = -1;
 	this._playlist = playlist;
 
-	console.log("Loading playlist views");
 	if(this._dom){
 		var count = this._playlist.numberOfTracks();
 		for(var idx=0; idx<count; idx++){
 			var track = this._playlist.getTrackAtIndex(idx);
-			console.log("Loading view for track at " + idx);
 			this._dom.append(this.trackViewForTrack(track).domElement());
 		}
 	}
@@ -113,7 +109,9 @@ var MPTrackView = function(track, player){
 	this._albumArtView = $("<div class='MPAlbumArtView'></div>");
 	this._titleLabel = $("<div class='MPTitleLabel'></div>");
 	this._artistLabel = $("<div class='MPArtistLabel'></div>");
-	this._domElement.append(this._albumArtView).append(this._titleLabel).append(this._artistLabel);
+	this._albumLabel = $("<div class='MPAlbumLabel'></div>");
+
+	this._domElement.append(this._albumArtView).append(this._titleLabel).append(this._artistLabel).append(this._albumLabel);
 	
 	if(this._track.albumArtURL){
 		this._albumArtView.css({
@@ -136,9 +134,13 @@ var MPTrackView = function(track, player){
 		this._artistLabel.text("No Artist");
 		this._artistLabel.addClass("PMEmptyLabel");
 	}
-	
-	console.log("Built a track view")
-	return this;
+
+	if(this._track.album){
+		this._albumLabel.text(this._track.album);
+	}else{
+		this._albumLabel.text("No Album");
+		this._albumLabel.addClass("PMEmptyLabel");
+	}
 }
 
 MPTrackView.prototype.domElement = function(){
