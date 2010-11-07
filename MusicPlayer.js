@@ -110,6 +110,12 @@ MPPlayer.prototype.loadNextTrack = function(){
 }
 
 MPPlayer.prototype.loadTrack = function(track){
+	var oldTrackView = this.trackViewForTrack(this.getCurrentTrack());
+	if(oldTrackView){
+		oldTrackView.setProgress(0);
+		$(oldTrackView.domElement()).removeClass("MPNowPlaying");
+	}
+
 	this._currentTrack = this._playlist.indexOfTrack(track);
 	
 	this._player.attr({
@@ -122,6 +128,10 @@ MPPlayer.prototype.loadTrack = function(track){
 		this._isPlaying = false;
 		this.play();
 	}
+
+	var newTrackView = this.trackViewForTrack(track);
+	newTrackView.setProgress(0);
+	$(newTrackView.domElement()).addClass("MPNowPlaying");
 }
 
 MPPlayer.prototype.getCurrentTrack = function(){
@@ -129,6 +139,10 @@ MPPlayer.prototype.getCurrentTrack = function(){
 }
 
 MPPlayer.prototype.trackViewForTrack = function(track){
+	if(!track){
+		return undefined;
+	}
+	
 	var trackView = track._trackView;
 	if(!trackView){
 		trackView = new MPTrackView(track, this);

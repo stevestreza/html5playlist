@@ -13,6 +13,10 @@ body{
 	position: relative;
 }
 
+.MPTrackView.MPNowPlaying {
+	background-color: #232323;
+}
+
 .MPAlbumArtView{
 	width: 72px;
 	height: 72px;
