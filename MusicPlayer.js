@@ -1,6 +1,6 @@
 window.MPHashFromUsernameAndPassword = function(username, password){
 	var timestamp = new Date().getTime();
-	var hash = MD5(timestamp + username + password);
+	var hash = MD5(timestamp + MD5(password));
 	return {
 		username: username,
 		hash: hash,
@@ -49,7 +49,7 @@ MPPlaylist.prototype.saveToServerWithInfo = function(info){
 		parameters[key] = signature[key];
 	}
 	
-	$.post("http://mix.synack.me/" + this._username + "/" + this._playlistStub, parameters, function(data){
+	$.post("http://api.slaylist.com/" + this._username + "/" + this._playlistStub, parameters, function(data){
 		console.log("Got data: " + JSON.stringify(data));
 	});
 }

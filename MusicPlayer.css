@@ -24,6 +24,15 @@ body{
 	margin-top: 0px;
 	float: left;
 	margin-right: 10px;
+
+	background-size: 72px 72px;
+	-moz-background-size: 72px 72px;
+	-webkit-background-size: 72px 72px;
+}
+
+.MPAlbumArtView img {
+	width: 72px;
+	height: 72px;
 }
 
 .MPEmptyAlbumArt{
