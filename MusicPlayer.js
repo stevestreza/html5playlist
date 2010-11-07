@@ -10,8 +10,12 @@ MPPlaylist.prototype.trackAfter = function(index){
 	return newIndex;
 }
 
-MPPlaylist.prototype.getTrackAtIndex = function(index){
+MPPlaylist.prototype.trackAtIndex = function(index){
 	return this._tracks[index];
+}
+
+MPPlaylist.prototype.indexOfTrack = function(track){
+	return this._tracks.indexOf(track);
 }
 
 MPPlaylist.prototype.numberOfTracks = function(){
@@ -39,11 +43,15 @@ MPPlayer.prototype.setPlaylist = function(playlist){
 	if(this._dom){
 		var count = this._playlist.numberOfTracks();
 		for(var idx=0; idx<count; idx++){
-			var track = this._playlist.getTrackAtIndex(idx);
+			var track = this._playlist.trackAtIndex(idx);
 			this._dom.append(this.trackViewForTrack(track).domElement());
 		}
 	}
 };
+
+MPPlayer.prototype.isPlaying = function(){
+	return this._isPlaying;
+}
 
 MPPlayer.prototype.play = function(){
 	if(!this._isPlaying){
@@ -53,7 +61,6 @@ MPPlayer.prototype.play = function(){
 			this.loadNextTrack();
 		}
 		
-		this._player[0].load();
 		this._player[0].play();
 		
 		this._startUpdateTimer();
@@ -87,7 +94,7 @@ MPPlayer.prototype._updateProgressBar = function(){
 MPPlayer.prototype.pause = function(){
 	if(this._isPlaying){
 		this._isPlaying = false;
-		this._player[0].stop();
+		this._player[0].pause();
 		this._stopUpdateTimer();
 	}
 };
@@ -97,22 +104,28 @@ MPPlayer.prototype.loadNextTrack = function(){
 		var trackIndex = this._currentTrack;
 		trackIndex = this._playlist.trackAfter(trackIndex);
 
-		var track = this._playlist.getTrackAtIndex(trackIndex);
-		this._currentTrack = trackIndex;
-		
-		this._player.attr({
-			src: track.url
-		});
-		
-		if(this._isPlaying == true){
-			this._isPlaying = false;
-			this.play();
-		}
+		var track = this._playlist.trackAtIndex(trackIndex);
+		this.loadTrack(track);
+	}
+}
+
+MPPlayer.prototype.loadTrack = function(track){
+	this._currentTrack = this._playlist.indexOfTrack(track);
+	
+	this._player.attr({
+		src: track.url
+	});
+	
+	this._player[0].load();
+
+	if(this._isPlaying == true){
+		this._isPlaying = false;
+		this.play();
 	}
 }
 
 MPPlayer.prototype.getCurrentTrack = function(){
-	return this._playlist.getTrackAtIndex(this._currentTrack);
+	return this._playlist.trackAtIndex(this._currentTrack);
 }
 
 MPPlayer.prototype.trackViewForTrack = function(track){
@@ -130,7 +143,15 @@ var MPTrackView = function(track, player){
 	
 	this._domElement = $("<div class='MPTrackView'></div>");
 	this._domElement.bind("click", function(event){
-		
+		if(self._track == player.getCurrentTrack()){
+			if(player.isPlaying()){
+				player.pause();
+			}else{
+				player.play();
+			}
+		}else{
+			player.loadTrack(self._track);
+		}
 	});
 	
 	this._backgroundView = $("<div class='MPBackgroundView'></div>");
