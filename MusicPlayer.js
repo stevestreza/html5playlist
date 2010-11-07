@@ -107,9 +107,9 @@ var MPTrackView = function(track, player){
 	});
 	
 	this._albumArtView = $("<div class='MPAlbumArtView'></div>");
-	this._titleLabel = $("<div class='MPTitleLabel'></div>");
-	this._artistLabel = $("<div class='MPArtistLabel'></div>");
-	this._albumLabel = $("<div class='MPAlbumLabel'></div>");
+	this._titleLabel = $("<div class='MPTitleLabel MPLabel'></div>");
+	this._artistLabel = $("<div class='MPArtistLabel MPLabel'></div>");
+	this._albumLabel = $("<div class='MPAlbumLabel MPLabel'></div>");
 
 	this._domElement.append(this._albumArtView).append(this._titleLabel).append(this._artistLabel).append(this._albumLabel);
 	
