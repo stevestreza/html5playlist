@@ -258,8 +258,10 @@ var MPTrackView = function(track, player){
 }
 
 MPTrackView.prototype.setProgress = function(progress){
+	var width = $(this._backgroundView).width();
+	var totalWidth = (width - 72) * progress + 72;
 	this._progressBarView.css({
-		width: "" + (progress * 100) + "%"
+		width: totalWidth
 	})
 }
 
