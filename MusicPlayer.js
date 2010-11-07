@@ -22,6 +22,14 @@ MPPlaylist.prototype.trackAfter = function(index){
 	return newIndex;
 }
 
+MPPlaylist.prototype.trackBefore = function(index){
+	var newIndex = index-1;
+	if(newIndex < 0){
+		newIndex = this._tracks.length-1;
+	}
+	return newIndex;
+}
+
 MPPlaylist.prototype.trackAtIndex = function(index){
 	return this._tracks[index];
 }
@@ -65,7 +73,29 @@ var MPPlayer = function(dom){
 	var self = this;
 	this._player.bind("ended", function(){
 		self.loadNextTrack();
-	})
+	});
+	
+	$(window).bind("keypress", function(e){
+		if(e.which == 32){
+			/* spacebar */
+			if(self.isPlaying()){
+				self.pause();
+			}else{
+				self.play();
+			}
+			e.preventDefault();
+		}else if(e.which == 106 || e.which == 108){
+			/* next song */
+			self.loadNextTrack();
+			e.preventDefault();
+		}else if(e.which == 104 || e.which == 107){
+			/* previous song */
+			self.loadPreviousTrack();
+			e.preventDefault();
+		}else{
+			console.log("Pressed " + e.which);
+		}
+	});
 };
 
 MPPlayer.prototype.setPlaylist = function(playlist){
@@ -143,6 +173,16 @@ MPPlayer.prototype.loadNextTrack = function(){
 	if(this._playlist){
 		var trackIndex = this._currentTrack;
 		trackIndex = this._playlist.trackAfter(trackIndex);
+
+		var track = this._playlist.trackAtIndex(trackIndex);
+		this.loadTrack(track);
+	}
+}
+
+MPPlayer.prototype.loadPreviousTrack = function(){
+	if(this._playlist){
+		var trackIndex = this._currentTrack;
+		trackIndex = this._playlist.trackBefore(trackIndex);
 
 		var track = this._playlist.trackAtIndex(trackIndex);
 		this.loadTrack(track);
