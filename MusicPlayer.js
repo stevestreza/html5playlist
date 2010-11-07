@@ -1,5 +1,5 @@
 window.MPHashFromUsernameAndPassword = function(username, password){
-	var timestamp = new Date().getTime();
+	var timestamp = parseInt((new Date().getTime() / 1000), 10);
 	var hash = MD5(timestamp + MD5(password));
 	return {
 		username: username,
@@ -100,6 +100,8 @@ MPPlayer.prototype.play = function(){
 		this._player[0].play();
 		
 		this._startUpdateTimer();
+
+		$(this.trackViewForTrack(this.getCurrentTrack()).domElement()).removeClass("MPPaused");
 	}
 };
 
@@ -132,6 +134,8 @@ MPPlayer.prototype.pause = function(){
 		this._isPlaying = false;
 		this._player[0].pause();
 		this._stopUpdateTimer();
+		
+		$(this.trackViewForTrack(this.getCurrentTrack()).domElement()).addClass("MPPaused");
 	}
 };
 
@@ -149,7 +153,7 @@ MPPlayer.prototype.loadTrack = function(track){
 	var oldTrackView = this.trackViewForTrack(this.getCurrentTrack());
 	if(oldTrackView){
 		oldTrackView.setProgress(0);
-		$(oldTrackView.domElement()).removeClass("MPNowPlaying");
+		$(oldTrackView.domElement()).removeClass("MPNowPlaying").removeClass("MPPaused");
 	}
 
 	this._currentTrack = this._playlist.indexOfTrack(track);
