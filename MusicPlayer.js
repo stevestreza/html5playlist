@@ -8,11 +8,20 @@ window.MPHashFromUsernameAndPassword = function(username, password){
 	};
 }
 
-var MPPlaylist = function(tracks, username, playlistStub){
+var MPPlaylist = function(tracks, username, playlistStub, name){
 	this._tracks = tracks;
 	this._username = username;
 	this._playlistStub = playlistStub;
+	this._name = name;
 };
+
+MPPlaylist.prototype.path = function(){
+	return this._username + "/" + this._playlistStub;
+}
+
+MPPlaylist.prototype.name = function(){
+	return this._name;
+}
 
 MPPlaylist.prototype.trackAfter = function(index){
 	var newIndex = index+1;
@@ -238,9 +247,20 @@ $(function(){
 				player.loadTrack(playlist.trackAtIndex(song));
 				player.play();
 			}else if(playlists){
-				for(var playlistStub in playlists){
-					var playlistName = playlists[playlistStub];
+				var username = window.location.hash.match(/\#\!([^\/]+)\/?/)[1];
+				
+				element.children().remove();
+				var newPlaylists = [];
+				for(var stub in playlists){
+					var name = playlists[stub];
+					var playlist = new MPPlaylist([], username, stub, name);
+					newPlaylists.push(playlist);
 				}
+				
+				var listPlaylistsView = new MPListPlaylistsView(newPlaylists, element);
+				$(listPlaylistsView).bind("selected", function(ev, playlist){
+					window.location.hash = "#!" + playlist.path();
+				});
 			}
 		});
 	}).trigger("hashchange");
