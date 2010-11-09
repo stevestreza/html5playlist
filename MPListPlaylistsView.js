@@ -19,7 +19,6 @@ var MPPlaylistViewItem = window.MPPlaylistViewItem = MPListViewItem.extend({
 		
 		$(this.domElement()).addClass("MPPlaylistViewItem");
 		
-		console.log("Setting title label to " + playlist.name());
 		this._titleLabel.text(playlist.name());
 		
 		var self = this;
