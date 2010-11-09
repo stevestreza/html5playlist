@@ -71,7 +71,7 @@ MPPlaylist.prototype.saveToServerWithInfo = function(info){
 	}
 	
 	$.post("http://api.slaylist.com/" + this._username + "/" + this._playlistStub, parameters, function(data){
-		console.log("Got data: " + JSON.stringify(data));
+//		console.log("Got data: " + JSON.stringify(data));
 	});
 }
 
@@ -104,7 +104,7 @@ var MPPlayer = function(){
 			self.loadPreviousTrack();
 			e.preventDefault();
 		}else{
-			console.log("Pressed " + e.which);
+//			console.log("Pressed " + e.which);
 		}
 	});
 };
