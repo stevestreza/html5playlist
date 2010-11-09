@@ -1,6 +1,20 @@
 body{
 	margin: 0px;
 	padding: 0px;
+	background-color: #181818;
+}
+
+#credits{
+	font-family: "Helvetica" sans-serif;
+	color: #AAA;
+	font-size: small;
+	font-weight: bold;
+	text-align: center;
+	height: 4em;
+}
+
+#credits p{
+	margin-bottom: -1em;
 }
 
 .MPListViewItem {
