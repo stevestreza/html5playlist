@@ -1,7 +1,7 @@
 body{
 	margin: 0px;
 	padding: 0px;
-	background-color: #181818;
+	background-color: #222;
 }
 
 #credits{
@@ -10,7 +10,8 @@ body{
 }
 
 #credits p{
-	color: #AAA;
+	color: #888;
+	text-shadow: #000 0px 1px 1px;
 	font-family: "Helvetica";
 	font-weight: bold;
 	font-size: small;
