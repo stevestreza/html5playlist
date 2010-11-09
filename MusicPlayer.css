@@ -5,15 +5,15 @@ body{
 }
 
 #credits{
-	font-family: "Helvetica" sans-serif;
-	color: #AAA;
-	font-size: small;
-	font-weight: bold;
 	text-align: center;
 	height: 4em;
 }
 
 #credits p{
+	color: #AAA;
+	font-family: "Helvetica";
+	font-weight: bold;
+	font-size: small;
 	margin-bottom: -1em;
 }
 
