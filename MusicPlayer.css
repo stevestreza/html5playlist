@@ -67,7 +67,7 @@ body{
 	border-right: 1px solid #444;
 }
 
-.MPBackgroundView, .MPContents{
+.MPBackgroundView, .MPContentView{
 	position: absolute;
 	top: 0px;
 	left: 0px;

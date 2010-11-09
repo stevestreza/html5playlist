@@ -30,6 +30,10 @@ MPPlaylist.prototype.trackBefore = function(index){
 	return newIndex;
 }
 
+MPPlaylist.prototype.tracks = function(){
+	return this._tracks;
+}
+
 MPPlaylist.prototype.trackAtIndex = function(index){
 	return this._tracks[index];
 }
@@ -107,11 +111,10 @@ MPPlayer.prototype.setPlaylist = function(playlist){
 	this._playlist = playlist;
 
 	if(this._dom){
-		var count = this._playlist.numberOfTracks();
-		for(var idx=0; idx<count; idx++){
-			var track = this._playlist.trackAtIndex(idx);
-			this._dom.append(this.trackViewForTrack(track).domElement());
-		}
+		var self = this;
+		this._listView = new MPListView(this._dom, this._playlist.tracks(), function(item, idx){
+			return self.trackViewForTrack(item);
+		});
 	}
 };
 
@@ -231,87 +234,73 @@ MPPlayer.prototype.trackViewForTrack = function(track){
 	return trackView;
 }
 
-var MPTrackView = function(track, player){
-	var self = this;
-	this._track = track;
-	
-	this._domElement = $("<div class='MPTrackView'></div>");
-	this._domElement.bind("click", function(event){
-		if(self._track == player.getCurrentTrack()){
-			if(player.isPlaying()){
-				player.pause();
+var MPTrackView = MPListViewItem.extend({
+	init: function(track, player){
+		this._super();
+		
+		var self = this;
+		this._track = track;
+
+		$(this.domElement()).addClass("MPTrackView").bind("click", function(event){
+			if(self._track == player.getCurrentTrack()){
+				if(player.isPlaying()){
+					player.pause();
+				}else{
+					player.play();
+				}
 			}else{
-				player.play();
+				player.loadTrack(self._track);
 			}
-		}else{
-			player.loadTrack(self._track);
-		}
-	});
-	
-	this._backgroundView = $("<div class='MPBackgroundView'></div>");
-	this._contentsView = $("<div class='MPContents'></div>");
-	
-	this._progressBarView = $("<div class='MPProgressBar'></div>");
-	this._backgroundView.append(this._progressBarView);
-	
-	$([this._backgroundView, this._contentsView]).css({
-		width: "100%",
-		height: "100%",
-		position: "relative",
-		left:0,
-		top:0
-	});
-	
-	this._albumArtView = $("<div class='MPAlbumArtView'></div>");
-	this._titleLabel = $("<div class='MPTitleLabel MPLabel'></div>");
-	this._artistLabel = $("<div class='MPArtistLabel MPLabel'></div>");
-	this._albumLabel = $("<div class='MPAlbumLabel MPLabel'></div>");
-
-	this._contentsView.append(this._albumArtView).append(this._titleLabel).append(this._artistLabel).append(this._albumLabel);
-	
-	this._domElement.append(this._backgroundView).append(this._contentsView);
-	
-	if(this._track.albumArtURL){
-		this._albumArtView.css({
-			backgroundImage: "url(" + this._track.albumArtURL + ")"
 		});
-	}else{
-		this._albumArtView.addClass("MPEmptyAlbumArt");
-	}
-	
-	if(this._track.title){
-		this._titleLabel.text(this._track.title);
-	}else{
-		this._titleLabel.text("No Title");
-		this._titleLabel.addClass("PMEmptyLabel");
-	}
 
-	if(this._track.artist){
-		this._artistLabel.text(this._track.artist);
-	}else{
-		this._artistLabel.text("No Artist");
-		this._artistLabel.addClass("PMEmptyLabel");
-	}
 
-	if(this._track.album){
-		this._albumLabel.text(this._track.album);
-	}else{
-		this._albumLabel.text("No Album");
-		this._albumLabel.addClass("PMEmptyLabel");
-	}
-}
+		this._progressBarView = $("<div class='MPProgressBar'></div>");
+		this.backgroundView().append(this._progressBarView);
 
-MPTrackView.prototype.setProgress = function(progress){
-	var width = $(this._backgroundView).width();
-	var totalWidth = (width - 72) * progress + 72;
-	this._progressBarView.css({
-		width: totalWidth
-	})
-}
+		this._albumArtView = $("<div class='MPAlbumArtView'></div>");
+		this._titleLabel = $("<div class='MPTitleLabel MPLabel'></div>");
+		this._artistLabel = $("<div class='MPArtistLabel MPLabel'></div>");
+		this._albumLabel = $("<div class='MPAlbumLabel MPLabel'></div>");
 
-MPTrackView.prototype.domElement = function(){
-	return this._domElement[0];
-}
+		this.contentsView().append(this._albumArtView).append(this._titleLabel).append(this._artistLabel).append(this._albumLabel);
+
+		if(this._track.albumArtURL){
+			this._albumArtView.css({
+				backgroundImage: "url(" + this._track.albumArtURL + ")"
+			});
+		}else{
+			this._albumArtView.addClass("MPEmptyAlbumArt");
+		}
+
+		if(this._track.title){
+			this._titleLabel.text(this._track.title);
+		}else{
+			this._titleLabel.text("No Title");
+			this._titleLabel.addClass("PMEmptyLabel");
+		}
+
+		if(this._track.artist){
+			this._artistLabel.text(this._track.artist);
+		}else{
+			this._artistLabel.text("No Artist");
+			this._artistLabel.addClass("PMEmptyLabel");
+		}
+
+		if(this._track.album){
+			this._albumLabel.text(this._track.album);
+		}else{
+			this._albumLabel.text("No Album");
+			this._albumLabel.addClass("PMEmptyLabel");
+		}
+	},
+	setProgress: function(progress){
+		var width = $(this.backgroundView()).width();
+		var totalWidth = (width - 72) * progress + 71;
+		this._progressBarView.css({
+			width: totalWidth
+		});
+	}	
+});
 
 $(function(){
 	var player = new MPPlayer($("#playlist")[0]);
@@ -339,11 +328,18 @@ $(function(){
 
 		$.getJSON(playlistURL || "playlist.json", function(data){
 			var tracks = data.tracks;
-			var playlist = new MPPlaylist(tracks);
+			var playlists = data.playlists;
+			if(tracks){
+				var playlist = new MPPlaylist(tracks);
 
-			player.setPlaylist(playlist);
-			player.loadTrack(playlist.trackAtIndex(song));
-			player.play();
+				player.setPlaylist(playlist);
+				player.loadTrack(playlist.trackAtIndex(song));
+				player.play();
+			}else if(playlists){
+				for(var playlistStub in playlists){
+					var playlistName = playlists[playlistStub];
+				}
+			}
 		});
 	}).trigger("hashchange");
 });
