@@ -247,6 +247,8 @@ $(function(){
 				player.loadTrack(playlist.trackAtIndex(song));
 				player.play();
 			}else if(playlists){
+				player.pause();
+				
 				var username = window.location.hash.match(/\#\!([^\/]+)\/?/)[1];
 				
 				element.children().remove();
