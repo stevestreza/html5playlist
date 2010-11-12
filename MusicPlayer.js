@@ -217,27 +217,42 @@ $(document).ready(function(){
 		dataType: "script",
 		success: function(data, status){
 			console.log("Got all.js " + window.FB);
-		}
-	})
-	
-	var loginToFacebook = function(){
-		FB.init({appId: '159504314086908', status: true, cookie: true, xfbml: true})
-		FB.login(function(response){
-			if(response.session){
-				console.log("Logged in!");
+			FB.init({appId: '159504314086908', status: true, cookie: true, xfbml: true});
+			
+			var login = $("#login");
+
+			var fetchFacebookAccountInfo = function(){
 				var query = FB.Data.query('SELECT name, pic_square FROM user WHERE uid = me()');
 				query.wait(function(rows) {
 					var meta = rows[0];
-					console.log("Got query data ", meta);
-					$("#login").html("" + meta.name + " <img src='" + meta.pic_square + "' />");
+					console.log("logged in");
+					login.html("" + meta.name + " <img src='" + meta.pic_square + "' />");
+					login.addClass("available");
 				});
-			}else{
-				console.log("No Facebook account :(");
 			}
-		}, {perms: 'offline_access,publish_stream,read_stream'});
-	}
 
-	$("#login").click(loginToFacebook);
+			var loginToFacebook = function(){
+				FB.login(function(response){
+					if(response.session){
+						fetchFacebookAccountInfo();
+					}else{
+						console.log("No Facebook account :(");
+						login.addClass("Available");
+					}
+				}, {perms: 'offline_access,publish_stream,read_stream'});
+			}
+
+			FB.getLoginStatus(function(response){
+				if(response.session){
+					fetchFacebookAccountInfo();
+				}else{
+					login.addClass("Available");
+				}
+			})
+
+			$("#login").click(loginToFacebook);
+		}
+	})
 	
 	var element = $("#playlist");
 	var player = new MPPlayer();

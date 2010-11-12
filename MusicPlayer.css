@@ -45,6 +45,13 @@ body{
 	right: 10px;
 	float: right;
 	text-align: right;
+	opacity: 0;
+	-webkit-transition-property: opacity;
+	-webkit-transition-duration: 500ms;
+}
+
+#header #login.available{
+	opacity: 1;
 }
 
 #credits{
