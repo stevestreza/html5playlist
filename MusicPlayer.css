@@ -4,6 +4,40 @@ body{
 	background-color: #222;
 }
 
+#header{
+	margin: 0px;
+	padding: 0px;
+
+	color: #BBB;
+	text-shadow: #000 0px 1px 1px;
+	font-family: "Helvetica";
+
+	font-weight: bold;
+	font-size: medium;
+
+	height: 2em;
+	
+	border-bottom: 1px solid #444;
+}
+
+#header div{
+	padding-top: 0.5em;
+	width: 50%;
+	position: relative;
+	top: 0px;
+}
+
+#header #title{
+	float: left;
+	left: 10px;
+}
+
+#header #login{
+	right: 10px;
+	float: right;
+	text-align: right;
+}
+
 #credits{
 	text-align: center;
 	height: 4em;

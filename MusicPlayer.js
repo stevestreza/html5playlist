@@ -209,11 +209,34 @@ MPPlayer.prototype.getCurrentTrack = function(){
 	return this._playlist.trackAtIndex(this._currentTrack);
 }
 
-$(function(){
+$(document).ready(function(){
+	console.log("Getting script");
+		
+	$.getScript("http://static.ak.fbcdn.net/connect/en_US/core.js", function(data, status){		
+		console.log("Got all.js " + window.FB);
+	$("#login").click(function(){
+		FB.init({appId: '159504314086908', status: true, cookie: true, xfbml: true})
+		FB.login(function(response){
+			if(response.session){
+				console.log("Logged in!");
+			}else{
+				console.log("No Facebook account :(");
+			}
+		});
+	});
+	});
+	
 	var element = $("#playlist");
 	var player = new MPPlayer();
 	$(window).hashchange(function(){
 		var playlistURL = window.location.hash;
+		
+		// gross but it works
+		var matches = playlistURL.match(/\#\!([^\/]+)(\/([^\/]+)(\/([0-9]+))?)?/);
+		var username = matches[1];
+		var playlistStub = matches[3];
+		var song = matches[5] || "1";
+		
 		var song = 0;
 		if(playlistURL != undefined){
 			playlistURL = playlistURL.substr(1, playlistURL.length);
@@ -237,8 +260,9 @@ $(function(){
 		$.getJSON(playlistURL || "playlist.json", function(data){
 			var tracks = data.tracks;
 			var playlists = data.playlists;
+			
 			if(tracks){
-				var playlist = new MPPlaylist(tracks);
+				var playlist = new MPPlaylist(tracks, username, playlistStub, data.name);
 
 				element.children().remove();
 				var playlistView = new MPPlaylistView(playlist, player, element);
@@ -249,7 +273,6 @@ $(function(){
 			}else if(playlists){
 				player.pause();
 				
-				var username = window.location.hash.match(/\#\!([^\/]+)\/?/)[1];
 				
 				element.children().remove();
 				var newPlaylists = [];

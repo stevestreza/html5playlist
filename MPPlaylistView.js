@@ -4,6 +4,12 @@ var MPPlaylistView = window.MPPlaylistView = Class.extend({
 		this._player = player;
 		this._domElement = $(element);
 		
+		var playlistName = this._playlist.name();
+		if(playlistName){
+			document.title = playlistName;
+			$("#title").text(playlistName);
+		}
+		
 		var self = this;
 		this._listView = new MPListView(this._domElement, this._playlist.tracks(), function(item, idx){
 			return self.trackViewForTrack(item);
