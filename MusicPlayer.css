@@ -20,6 +20,15 @@ body{
 	border-bottom: 1px solid #444;
 }
 
+#header img{
+	width: 2em;
+	height: 2em;
+	float: right;
+	margin-top: -0.5em;
+	margin-right: -10px;
+	padding-left: 10px;
+}
+
 #header div{
 	padding-top: 0.5em;
 	width: 50%;
